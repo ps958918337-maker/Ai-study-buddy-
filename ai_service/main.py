@@ -10,11 +10,11 @@ from typing import List, Optional
 import anthropic
 import faiss
 import numpy as np
+import requests as http_requests
 from dotenv import load_dotenv
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 from pypdf import PdfReader
-from sentence_transformers import SentenceTransformer
 from starlette.responses import JSONResponse
 
 load_dotenv()
@@ -28,8 +28,39 @@ OVERLAP_WORDS = 40
 NOT_FOUND = "I could not find this in your uploaded notes."
 
 app = FastAPI(title="AI Study Buddy - AI Service")
-embedder = SentenceTransformer(EMBED_NAME)
-DIM = embedder.get_sentence_embedding_dimension()
+
+# ---------- HuggingFace Inference API for embeddings (no PyTorch needed) ----------
+HF_API_URL = f"https://api-inference.huggingface.co/pipeline/feature-extraction/{EMBED_NAME}"
+HF_TOKEN = os.getenv("HF_TOKEN", "")  # optional, increases rate limit
+DIM = 384  # all-MiniLM-L6-v2 output dimension
+
+
+def _hf_embed(texts: List[str]) -> np.ndarray:
+    """Call HuggingFace Inference API for sentence embeddings."""
+    headers = {}
+    if HF_TOKEN:
+        headers["Authorization"] = f"Bearer {HF_TOKEN}"
+    # Process in batches of 32 to avoid payload limits
+    all_embeddings = []
+    for i in range(0, len(texts), 32):
+        batch = texts[i:i + 32]
+        for attempt in range(3):
+            try:
+                resp = http_requests.post(HF_API_URL, headers=headers, json={"inputs": batch, "options": {"wait_for_model": True}}, timeout=120)
+                resp.raise_for_status()
+                vecs = np.array(resp.json(), dtype="float32")
+                # Normalize embeddings
+                norms = np.linalg.norm(vecs, axis=1, keepdims=True)
+                norms[norms == 0] = 1
+                vecs = vecs / norms
+                all_embeddings.append(vecs)
+                break
+            except Exception as exc:
+                if attempt == 2:
+                    raise HTTPException(status_code=502, detail=f"Embedding API failed: {exc}")
+                import time
+                time.sleep(2 ** attempt)
+    return np.vstack(all_embeddings) if all_embeddings else np.zeros((0, DIM), dtype="float32")
 
 
 @app.middleware("http")
@@ -72,7 +103,7 @@ def chunk_text(text: str) -> List[str]:
 
 
 def embed(texts: List[str]) -> np.ndarray:
-    return embedder.encode(texts, normalize_embeddings=True, convert_to_numpy=True).astype("float32")
+    return _hf_embed(texts)
 
 
 def call_llm(system: str, user: str, max_tokens: int = 1500) -> str:
