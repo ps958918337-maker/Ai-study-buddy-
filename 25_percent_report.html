@@ -1,0 +1,2726 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Study Buddy – 25% Progress Report (Week 3)</title>
+  <meta name="description"
+    content="25% project progress report for AI Study Buddy – Phase 1 complete + database and login from Phase 2." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #060b18;
+      --surface: #0d1526;
+      --surface2: #131e35;
+      --border: rgba(99, 120, 200, 0.18);
+      --accent: #6366f1;
+      --accent2: #8b5cf6;
+      --teal: #14b8a6;
+      --amber: #f59e0b;
+      --rose: #f43f5e;
+      --green: #22c55e;
+      --blue: #3b82f6;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --tag-bg: rgba(99, 102, 241, 0.15);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.7;
+    }
+
+    /* ── SIDEBAR NAV ── */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 240px;
+      height: 100vh;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 28px 0;
+      overflow-y: auto;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-logo {
+      padding: 0 22px 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .sidebar-logo .logo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .progress-bar-wrap {
+      padding: 12px 22px;
+      margin-bottom: 8px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .progress-track {
+      height: 5px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 25%;
+      background: linear-gradient(90deg, var(--accent), var(--teal));
+      border-radius: 99px;
+      animation: fillBar 1.2s cubic-bezier(.4, 0, .2, 1) forwards;
+    }
+
+    @keyframes fillBar {
+      from {
+        width: 0;
+      }
+
+      to {
+        width: 25%;
+      }
+    }
+
+    .nav-group-label {
+      padding: 10px 22px 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 22px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      color: var(--text);
+      background: rgba(99, 102, 241, 0.08);
+      border-left-color: var(--accent);
+    }
+
+    .nav-item .nav-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .nav-item.active .nav-dot,
+    .nav-item:hover .nav-dot {
+      opacity: 1;
+    }
+
+    /* ── MAIN CONTENT ── */
+    .main {
+      margin-left: 240px;
+      padding: 0;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      padding: 80px 60px 60px;
+      background: linear-gradient(135deg, #060b18 0%, #0d1a3a 50%, #060b18 100%);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      left: 30%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(20, 184, 166, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .badge-purple {
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.35);
+      color: #a5b4fc;
+    }
+
+    .badge-green {
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: #86efac;
+    }
+
+    .badge-amber {
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: #fcd34d;
+    }
+
+    .hero h1 {
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #fff 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 600px;
+      margin-bottom: 32px;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .meta-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+    }
+
+    .meta-value {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      padding: 64px 60px;
+      border-bottom: 1px solid var(--border);
+      scroll-margin-top: 20px;
+    }
+
+    .section:last-child {
+      border-bottom: none;
+    }
+
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: var(--tag-bg);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #a5b4fc;
+      margin-bottom: 16px;
+    }
+
+    .section h2 {
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      margin-bottom: 12px;
+    }
+
+    .section-lead {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 720px;
+      margin-bottom: 40px;
+      line-height: 1.8;
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .card:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+      transform: translateY(-2px);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .icon-purple {
+      background: rgba(99, 102, 241, 0.2);
+    }
+
+    .icon-teal {
+      background: rgba(20, 184, 166, 0.2);
+    }
+
+    .icon-amber {
+      background: rgba(245, 158, 11, 0.2);
+    }
+
+    .icon-rose {
+      background: rgba(244, 63, 94, 0.2);
+    }
+
+    .icon-green {
+      background: rgba(34, 197, 94, 0.2);
+    }
+
+    .icon-blue {
+      background: rgba(59, 130, 246, 0.2);
+    }
+
+    /* ── GRID LAYOUTS ── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .grid-auto {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    /* ── PROBLEM STATEMENT ── */
+    .problem-box {
+      background: linear-gradient(135deg, rgba(244, 63, 94, 0.08), rgba(99, 102, 241, 0.08));
+      border: 1px solid rgba(244, 63, 94, 0.2);
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 28px;
+    }
+
+    /* ── OBJECTIVES LIST ── */
+    .obj-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .obj-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      transition: border-color 0.2s;
+    }
+
+    .obj-item:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+
+    .obj-num {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── LITERATURE TABLE ── */
+    .lit-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+
+    .lit-table th {
+      background: var(--surface2);
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .lit-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .lit-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .lit-table tr:hover td {
+      background: rgba(99, 102, 241, 0.04);
+    }
+
+    .check {
+      color: var(--green);
+      font-size: 15px;
+    }
+
+    .cross {
+      color: var(--rose);
+      font-size: 15px;
+    }
+
+    .partial {
+      color: var(--amber);
+      font-size: 15px;
+    }
+
+    .highlight-row td {
+      background: rgba(99, 102, 241, 0.06) !important;
+    }
+
+    .highlight-row td:first-child {
+      border-left: 3px solid var(--accent);
+    }
+
+    /* ── TECH STACK ── */
+    .tech-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .tech-chip:hover {
+      border-color: rgba(99, 102, 241, 0.5);
+      background: rgba(99, 102, 241, 0.08);
+    }
+
+    .tech-group {
+      margin-bottom: 24px;
+    }
+
+    .tech-group-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .tech-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* ── CODE BLOCKS ── */
+    .code-block {
+      background: #0a0f1e;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid rgba(99, 102, 241, 0.15);
+    }
+
+    .code-filename {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .code-lang {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(99, 102, 241, 0.2);
+      color: #a5b4fc;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .code-dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .code-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red {
+      background: #ff5f57;
+    }
+
+    .dot-yellow {
+      background: #ffbd2e;
+    }
+
+    .dot-green {
+      background: #28ca41;
+    }
+
+    pre {
+      padding: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: #cdd6f4;
+      overflow-x: auto;
+    }
+
+    /* Syntax highlighting */
+    .kw {
+      color: #cba6f7;
+    }
+
+    /* keyword */
+    .fn {
+      color: #89b4fa;
+    }
+
+    /* function */
+    .str {
+      color: #a6e3a1;
+    }
+
+    /* string */
+    .num {
+      color: #fab387;
+    }
+
+    /* number */
+    .cmt {
+      color: #6c7086;
+      font-style: italic;
+    }
+
+    /* comment */
+    .cls {
+      color: #f38ba8;
+    }
+
+    /* class/decorator */
+    .prop {
+      color: #89dceb;
+    }
+
+    /* property */
+    .op {
+      color: #89b4fa;
+    }
+
+    /* operator */
+
+    /* ── DB SCHEMA ── */
+    .schema-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .schema-header {
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .schema-icon {
+      font-size: 18px;
+    }
+
+    .schema-name {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .schema-desc {
+      font-size: 12px;
+      color: var(--muted);
+      margin-left: auto;
+    }
+
+    .schema-body {
+      padding: 0;
+    }
+
+    .schema-field {
+      display: grid;
+      grid-template-columns: 160px 140px 1fr;
+      gap: 12px;
+      padding: 9px 20px;
+      border-bottom: 1px solid rgba(99, 102, 241, 0.07);
+      font-size: 12.5px;
+      align-items: center;
+    }
+
+    .schema-field:last-child {
+      border-bottom: none;
+    }
+
+    .field-name {
+      font-family: 'JetBrains Mono', monospace;
+      color: #89dceb;
+      font-weight: 500;
+    }
+
+    .field-name.pk::after {
+      content: ' 🔑';
+      font-size: 10px;
+    }
+
+    .field-name.fk::after {
+      content: ' 🔗';
+      font-size: 10px;
+    }
+
+    .field-type {
+      color: #cba6f7;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .field-note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 1px 7px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      margin-left: 6px;
+    }
+
+    .tag-pk {
+      background: rgba(245, 158, 11, 0.2);
+      color: #fcd34d;
+    }
+
+    .tag-fk {
+      background: rgba(59, 130, 246, 0.2);
+      color: #93c5fd;
+    }
+
+    .tag-idx {
+      background: rgba(20, 184, 166, 0.2);
+      color: #5eead4;
+    }
+
+    .tag-uni {
+      background: rgba(244, 63, 94, 0.2);
+      color: #fca5a5;
+    }
+
+    .tag-req {
+      background: rgba(34, 197, 94, 0.15);
+      color: #86efac;
+    }
+
+    /* ── DEMO SECTION ── */
+    .demo-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .demo-step {
+      display: flex;
+      gap: 20px;
+    }
+
+    .step-line {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      flex-shrink: 0;
+    }
+
+    .step-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-connector {
+      width: 2px;
+      flex: 1;
+      min-height: 30px;
+      background: linear-gradient(to bottom, rgba(99, 102, 241, 0.5), rgba(99, 102, 241, 0.1));
+      margin: 4px 0;
+    }
+
+    .demo-step:last-child .step-connector {
+      display: none;
+    }
+
+    .step-content {
+      padding: 0 0 32px;
+      flex: 1;
+    }
+
+    .step-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--text);
+      padding-top: 6px;
+    }
+
+    .step-desc {
+      font-size: 13.5px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      line-height: 1.7;
+    }
+
+    /* ── TERMINAL ── */
+    .terminal {
+      background: #060b18;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .terminal-bar {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(34, 197, 94, 0.15);
+    }
+
+    .terminal-title {
+      font-size: 11px;
+      color: var(--muted);
+      flex: 1;
+      text-align: center;
+    }
+
+    .terminal-body {
+      padding: 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12.5px;
+      line-height: 1.7;
+    }
+
+    .t-prompt {
+      color: #a6e3a1;
+    }
+
+    .t-cmd {
+      color: #cdd6f4;
+    }
+
+    .t-out {
+      color: #6c7086;
+    }
+
+    .t-success {
+      color: #a6e3a1;
+    }
+
+    .t-error {
+      color: #f38ba8;
+    }
+
+    .t-info {
+      color: #89b4fa;
+    }
+
+    /* ── PHASE TIMELINE ── */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .tl-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 20px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      transition: border-color 0.2s;
+    }
+
+    .tl-item.done {
+      border-left: 3px solid var(--green);
+    }
+
+    .tl-item.partial {
+      border-left: 3px solid var(--amber);
+    }
+
+    .tl-item.todo {
+      border-left: 3px solid rgba(99, 102, 241, 0.3);
+      opacity: 0.6;
+    }
+
+    .tl-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+
+    .tl-badge.done {
+      background: rgba(34, 197, 94, 0.15);
+      color: #86efac;
+    }
+
+    .tl-badge.partial {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fcd34d;
+    }
+
+    .tl-badge.todo {
+      background: rgba(99, 102, 241, 0.1);
+      color: #a5b4fc;
+    }
+
+    .tl-text {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .tl-week {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ── DIAGRAMS ── */
+    .diagram-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .diagram-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+    }
+
+    .diagram-wrap img {
+      width: 100%;
+      border-radius: 8px;
+      display: block;
+    }
+
+    /* ── USE CASE ── */
+    .usecase-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+
+    .actor-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .actor {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .actor-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .actor-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .uc-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .uc-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: rgba(99, 102, 241, 0.06);
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .uc-arrow {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* ── DFD ── */
+    .dfd-svg {
+      width: 100%;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      margin-left: 240px;
+      padding: 32px 60px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.4);
+      border-radius: 3px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .sidebar {
+        width: 200px;
+      }
+
+      .main,
+      .footer {
+        margin-left: 200px;
+      }
+
+      .section,
+      .hero {
+        padding: 40px 28px;
+      }
+
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .sidebar {
+        display: none;
+      }
+
+      .main,
+      .footer {
+        margin-left: 0;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .schema-field {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ════════════════════════ SIDEBAR ════════════════════════ -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-badge">
+        <div class="logo-icon">🧠</div>
+        AI Study Buddy
+      </div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-label">
+        <span>Overall Progress</span>
+        <span style="color:var(--accent)">25%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill"></div>
+      </div>
+    </div>
+
+    <div class="nav-group-label">Planning</div>
+    <a class="nav-item" href="#title">
+      <div class="nav-dot"></div>Title &amp; Synopsis
+    </a>
+    <a class="nav-item" href="#problem">
+      <div class="nav-dot"></div>Problem Statement
+    </a>
+    <a class="nav-item" href="#objectives">
+      <div class="nav-dot"></div>Objectives
+    </a>
+    <a class="nav-item" href="#literature">
+      <div class="nav-dot"></div>Literature Survey
+    </a>
+
+    <div class="nav-group-label">Design</div>
+    <a class="nav-item" href="#architecture">
+      <div class="nav-dot"></div>Architecture
+    </a>
+    <a class="nav-item" href="#diagrams">
+      <div class="nav-dot"></div>Use Case &amp; DFD
+    </a>
+    <a class="nav-item" href="#er">
+      <div class="nav-dot"></div>ER Diagram
+    </a>
+    <a class="nav-item" href="#techstack">
+      <div class="nav-dot"></div>Tech Stack
+    </a>
+    <a class="nav-item" href="#dbdesign">
+      <div class="nav-dot"></div>Database Design
+    </a>
+
+    <div class="nav-group-label">Demo</div>
+    <a class="nav-item" href="#setup">
+      <div class="nav-dot"></div>Project Setup
+    </a>
+    <a class="nav-item" href="#auth">
+      <div class="nav-dot"></div>Auth + JWT Demo
+    </a>
+    <a class="nav-item" href="#rag">
+      <div class="nav-dot"></div>PDF Chunking (RAG)
+    </a>
+
+    <div class="nav-group-label">Roadmap</div>
+    <a class="nav-item" href="#timeline">
+      <div class="nav-dot"></div>11-Week Timeline
+    </a>
+  </nav>
+
+  <!-- ════════════════════════ MAIN ════════════════════════ -->
+  <main class="main">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="badge badge-purple">📋 25% Progress Report &nbsp;·&nbsp; Week 3</div>
+      <h1>AI Study Buddy</h1>
+      <p class="hero-sub">
+        An AI-powered personalised study assistant that ingests lecture notes, answers questions
+        grounded in your material, generates quizzes and flashcards, and tracks your progress.
+      </p>
+      <div class="hero-meta">
+        <div class="meta-item">
+          <span class="meta-label">Phase Completed</span>
+          <span class="meta-value">Phase 1 (Full) + Phase 2 Start</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Current Week</span>
+          <span class="meta-value">Week 3 of 11</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Status</span>
+          <span class="meta-value" style="color:var(--green)">✓ On Track</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Demo Items</span>
+          <span class="meta-value">3 Live</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ TITLE & SYNOPSIS ═══════════ -->
+    <section class="section" id="title">
+      <div class="section-tag">📋 Planning</div>
+      <h2>Title &amp; Synopsis</h2>
+      <p class="section-lead">Project overview and scope definition.</p>
+
+      <div class="grid-2" style="gap:24px">
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon icon-purple">🧠</div>
+            Project Title
+          </div>
+          <p style="font-size:20px; font-weight:800; letter-spacing:-0.5px; margin-bottom:8px">AI Study Buddy</p>
+          <p style="font-size:13px; color:var(--muted)">
+            A Personalised, RAG-Powered Study Assistant
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon icon-teal">🎓</div>
+            Target Users
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px">
+              <span style="color:var(--teal)">▸</span> College and university students
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px">
+              <span style="color:var(--teal)">▸</span> Competitive exam candidates
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:13px">
+              <span style="color:var(--teal)">▸</span> Self-learners and lifelong learners
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="grid-column:1/-1">
+          <div class="card-title">
+            <div class="card-icon icon-amber">📄</div>
+            Synopsis
+          </div>
+          <p style="font-size:14px; line-height:1.8; color:var(--muted)">
+            AI Study Buddy is a web application that allows students to upload their own study material
+            (lecture notes, textbook chapters, PDFs) and interact with an AI that answers questions
+            <em>exclusively</em> from those materials — a technique called Retrieval-Augmented Generation (RAG).
+            Beyond Q&amp;A, the system auto-generates multiple-choice quizzes, flashcards with spaced-repetition
+            scheduling (SM-2 algorithm), short-answer evaluations, and AI-generated revision plans.
+            Progress data is persisted in MongoDB, allowing the system to identify weak topics and
+            personalise future study sessions. Everything runs in the browser with a clean,
+            responsive React frontend talking to an Express REST API, which delegates AI work to a
+            Python FastAPI micro-service that manages embeddings locally with FAISS.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ PROBLEM STATEMENT ═══════════ -->
+    <section class="section" id="problem">
+      <div class="section-tag">⚠️ Planning</div>
+      <h2>Problem Statement</h2>
+      <p class="section-lead">
+        The core challenge this project addresses.
+      </p>
+
+      <div class="problem-box">
+        <p style="font-size:16px; font-weight:700; margin-bottom:14px; color:#fca5a5">🔴 The Problem</p>
+        <p style="font-size:14.5px; line-height:1.9; color:var(--muted)">
+          Students today have access to vast amounts of study material but lack an intelligent tool that
+          <strong style="color:var(--text)">understands their specific notes</strong> and helps them study
+          effectively. Generic AI chatbots hallucinate or answer from general knowledge rather than the
+          student's actual syllabus. Traditional flashcard apps and quiz platforms are static, requiring
+          students to manually create content. There is no unified solution that combines
+          <strong style="color:var(--text)">AI-grounded Q&amp;A, automated quiz generation, adaptive flashcards,
+            and personalised revision planning</strong> — all anchored to the student's own material.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon icon-rose">😓</div>Pain Point 1
+          </div>
+          <p style="font-size:13px; color:var(--muted)">
+            Generic LLMs answer from general training data, not the student's actual lecture slides or chapter notes.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon icon-amber">⏰</div>Pain Point 2
+          </div>
+          <p style="font-size:13px; color:var(--muted)">
+            Creating flashcards and quizzes manually is extremely time-consuming, especially before exams.
+          </p>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon icon-blue">📉</div>Pain Point 3
+          </div>
+          <p style="font-size:13px; color:var(--muted)">
+            Students have no visibility into which topics they are weak at unless they take formal mock tests.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ OBJECTIVES ═══════════ -->
+    <section class="section" id="objectives">
+      <div class="section-tag">🎯 Planning</div>
+      <h2>Objectives</h2>
+      <p class="section-lead">The specific, measurable goals this system must achieve by the end of Week 11.</p>
+
+      <ul class="obj-list">
+        <li class="obj-item">
+          <div class="obj-num">1</div>
+          <div>
+            <div style="font-weight:600;margin-bottom:4px">RAG-based Q&amp;A Grounded in Student Notes</div>
+            <div style="font-size:13px;color:var(--muted)">The system must answer questions using only the text from
+              uploaded documents. Answers must cite source excerpts with relevance scores above a configurable threshold
+              (0.25).</div>
+          </div>
+        </li>
+        <li class="obj-item">
+          <div class="obj-num">2</div>
+          <div>
+            <div style="font-weight:600;margin-bottom:4px">Automated Quiz and Flashcard Generation</div>
+            <div style="font-size:13px;color:var(--muted)">Generate multiple-choice questions (4 options, answer index,
+              explanation), short-answer questions, and two-sided flashcards with topic labels — all from the uploaded
+              content using LLM prompting.</div>
+          </div>
+        </li>
+        <li class="obj-item">
+          <div class="obj-num">3</div>
+          <div>
+            <div style="font-weight:600;margin-bottom:4px">Spaced Repetition Flashcard Review (SM-2)</div>
+            <div style="font-size:13px;color:var(--muted)">Implement the SM-2 spaced-repetition algorithm to schedule
+              flashcard reviews based on user ratings (Again / Hard / Good / Easy). Due cards are surfaced
+              automatically.</div>
+          </div>
+        </li>
+        <li class="obj-item">
+          <div class="obj-num">4</div>
+          <div>
+            <div style="font-weight:600;margin-bottom:4px">Personalised AI Revision Planner</div>
+            <div style="font-size:13px;color:var(--muted)">Generate a day-by-day revision plan from the document
+              content. Plans are saved as tasks in the planner with due dates. The last day is always a full revision
+              and mock quiz.</div>
+          </div>
+        </li>
+        <li class="obj-item">
+          <div class="obj-num">5</div>
+          <div>
+            <div style="font-weight:600;margin-bottom:4px">Weak-topic Detection and Progress Analytics</div>
+            <div style="font-size:13px;color:var(--muted)">Track quiz attempt scores per document and per topic.
+              Identify weak topics (below 60%) and strong topics (above 80%). Display a streak counter and trend chart
+              of score history.</div>
+          </div>
+        </li>
+        <li class="obj-item">
+          <div class="obj-num">6</div>
+          <div>
+            <div style="font-weight:600;margin-bottom:4px">Secure Multi-user Authentication</div>
+            <div style="font-size:13px;color:var(--muted)">JWT-based register/login flow with bcrypt password hashing.
+              All data is scoped to the authenticated user; no data leaks between users.</div>
+          </div>
+        </li>
+        <li class="obj-item">
+          <div class="obj-num">7</div>
+          <div>
+            <div style="font-weight:600;margin-bottom:4px">Responsive, Accessible Web Interface</div>
+            <div style="font-size:13px;color:var(--muted)">A clean React single-page app that works on desktop and
+              tablet. Navigation, document upload, chat, study modes, and progress views all accessible from one
+              interface.</div>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ═══════════ LITERATURE SURVEY ═══════════ -->
+    <section class="section" id="literature">
+      <div class="section-tag">📚 Planning</div>
+      <h2>Literature Survey &amp; Comparison</h2>
+      <p class="section-lead">
+        Review of existing tools and research that informed the design of AI Study Buddy.
+      </p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:40px">
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon icon-purple">📖</div>Key References
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="font-size:13px"><strong style="color:var(--accent)">[1] Lewis et al. (2020)</strong><br><span
+                style="color:var(--muted)">Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks —
+                foundational RAG paper.</span></div>
+            <div style="font-size:13px"><strong style="color:var(--accent)">[2] SM-2 Algorithm (Wozniak,
+                1987)</strong><br><span style="color:var(--muted)">SuperMemo 2 spaced repetition algorithm used in Anki
+                and this project.</span></div>
+            <div style="font-size:13px"><strong style="color:var(--accent)">[3] Reimers &amp; Gurevych
+                (2019)</strong><br><span style="color:var(--muted)">Sentence-BERT — the basis for MiniLM-L6-v2 semantic
+                embeddings used for retrieval.</span></div>
+            <div style="font-size:13px"><strong style="color:var(--accent)">[4] Johnson et al. (2017)</strong><br><span
+                style="color:var(--muted)">FAISS: A Library for Efficient Similarity Search — used for local vector
+                search.</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon icon-teal">💡</div>Key Insights
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="font-size:13px;color:var(--muted)">✦ RAG outperforms pure parametric models for domain-specific
+              Q&amp;A because it retrieves exact source text rather than relying on potentially stale training data.
+            </div>
+            <div style="font-size:13px;color:var(--muted)">✦ SM-2 scheduling reduces required review sessions by ~60%
+              compared to massed practice (cramming) while achieving equal or better long-term retention.</div>
+            <div style="font-size:13px;color:var(--muted)">✦ Existing tools (Anki, Quizlet, ChatGPT) are siloed — no
+              single tool does RAG Q&amp;A, spaced repetition, quiz generation, and a study planner together.</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="overflow-x:auto; border-radius:14px; border:1px solid var(--border);">
+        <table class="lit-table">
+          <thead>
+            <tr>
+              <th>Tool / System</th>
+              <th>RAG Q&amp;A</th>
+              <th>Auto Quiz</th>
+              <th>Flashcards (SM-2)</th>
+              <th>Own-Material Only</th>
+              <th>Study Planner</th>
+              <th>Weak-topic Analytics</th>
+              <th>Open / Self-hosted</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>ChatGPT</strong></td>
+              <td><span class="partial">~</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+            </tr>
+            <tr>
+              <td><strong>Anki</strong></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="partial">~</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+            <tr>
+              <td><strong>Quizlet</strong></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="partial">~</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="partial">~</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+            </tr>
+            <tr>
+              <td><strong>Notion AI</strong></td>
+              <td><span class="partial">~</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="partial">~</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+            </tr>
+            <tr>
+              <td><strong>Perplexity</strong></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+            </tr>
+            <tr>
+              <td><strong>LlamaIndex RAG Demo</strong></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="cross">✗</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+            <tr class="highlight-row">
+              <td><strong>🧠 AI Study Buddy</strong></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+              <td><span class="check">✓</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">
+        ✓ = Full support &nbsp;·&nbsp; ~ = Partial / limited &nbsp;·&nbsp; ✗ = Not supported
+      </p>
+    </section>
+
+    <!-- ═══════════ ARCHITECTURE ═══════════ -->
+    <section class="section" id="architecture">
+      <div class="section-tag">🏗️ Design</div>
+      <h2>System Architecture</h2>
+      <p class="section-lead">Three-tier microservice architecture: React frontend, Node.js API gateway, and Python AI
+        service.</p>
+
+      <div class="diagram-wrap">
+        <div class="diagram-label">📐 Architecture Diagram</div>
+        <img
+          src="C:\Users\Priyanshu\.gemini\antigravity-ide\brain\793255db-faa3-4682-b080-9ae0adfeab94\architecture_diagram_1792919089784.png"
+          alt="AI Study Buddy Architecture Diagram showing three service tiers" />
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon icon-purple">⚛️</div>Frontend (React + Vite)
+          </div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Single-page application. Handles all routing,
+            state, and presentation.</p>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:13px">
+            <span>📄 Auth.jsx – Register &amp; Login</span>
+            <span>🏠 Dashboard.jsx – Stats overview</span>
+            <span>📚 Library.jsx – Document list</span>
+            <span>💬 Chat.jsx – RAG Q&amp;A</span>
+            <span>📝 Study.jsx – Quiz &amp; flashcards</span>
+            <span>📈 Progress.jsx – Analytics</span>
+            <span>📅 Planner.jsx – Task manager</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon icon-blue">🖥️</div>Backend (Express + Node.js)
+          </div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:12px">REST API gateway. Owns auth, data persistence,
+            and proxies AI requests.</p>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:13px">
+            <span>🔐 JWT auth middleware</span>
+            <span>📁 Multer file upload handler</span>
+            <span>🗄️ Mongoose ODM (MongoDB)</span>
+            <span>🔗 Axios proxy → AI service</span>
+            <span>🛡️ bcryptjs password hashing</span>
+            <span>📊 Progress &amp; stats aggregation</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">
+            <div class="card-icon icon-teal">🐍</div>AI Service (FastAPI + Python)
+          </div>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:12px">Handles all heavy AI work. Stateless HTTP
+            service on port 8000.</p>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:13px">
+            <span>📤 /ingest – PDF/TXT chunking</span>
+            <span>🔍 /ask – RAG retrieval + Claude</span>
+            <span>✏️ /generate – Quiz/flashcard gen</span>
+            <span>✅ /evaluate – Short answer grader</span>
+            <span>📅 /plan – Revision planner</span>
+            <span>🧠 FAISS local vector search</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ USE CASE & DFD ═══════════ -->
+    <section class="section" id="diagrams">
+      <div class="section-tag">📊 Design</div>
+      <h2>Use Case &amp; Data Flow Diagrams</h2>
+      <p class="section-lead">System actors, use cases, and level-1 data flow through the application.</p>
+
+      <div class="grid-2" style="margin-bottom:36px">
+        <!-- Use Case -->
+        <div class="usecase-box">
+          <p style="font-size:14px;font-weight:700;margin-bottom:16px">👥 Actors</p>
+          <div class="actor-row">
+            <div class="actor">
+              <div class="actor-icon" style="background:rgba(99,102,241,0.2)">👨‍🎓</div>
+              <div class="actor-label">Student (User)</div>
+            </div>
+            <div class="actor">
+              <div class="actor-icon" style="background:rgba(20,184,166,0.2)">🤖</div>
+              <div class="actor-label">Claude LLM</div>
+            </div>
+            <div class="actor">
+              <div class="actor-icon" style="background:rgba(245,158,11,0.2)">🗄️</div>
+              <div class="actor-label">MongoDB</div>
+            </div>
+          </div>
+          <p style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--muted)">Use Cases (Student)</p>
+          <div class="uc-list">
+            <div class="uc-item"><span class="uc-arrow">▸</span> Register / Login</div>
+            <div class="uc-item"><span class="uc-arrow">▸</span> Upload PDF or TXT document</div>
+            <div class="uc-item"><span class="uc-arrow">▸</span> Ask a question about notes (RAG Q&amp;A)</div>
+            <div class="uc-item"><span class="uc-arrow">▸</span> Generate and take a quiz</div>
+            <div class="uc-item"><span class="uc-arrow">▸</span> Review flashcards (spaced repetition)</div>
+            <div class="uc-item"><span class="uc-arrow">▸</span> View progress &amp; weak topics</div>
+            <div class="uc-item"><span class="uc-arrow">▸</span> Generate AI revision plan</div>
+            <div class="uc-item"><span class="uc-arrow">▸</span> Manage study tasks / checklist</div>
+          </div>
+        </div>
+
+        <!-- DFD -->
+        <div class="diagram-wrap" style="margin-bottom:0">
+          <p class="diagram-label">Level-1 Data Flow Diagram</p>
+          <svg class="dfd-svg" viewBox="0 0 480 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Student -->
+            <ellipse cx="60" cy="60" rx="48" ry="28" fill="rgba(99,102,241,0.15)" stroke="rgba(99,102,241,0.5)"
+              stroke-width="1.5" />
+            <text x="60" y="64" text-anchor="middle" font-size="11" fill="#a5b4fc" font-weight="600">Student</text>
+
+            <!-- Process 1: Auth -->
+            <rect x="180" y="38" width="120" height="44" rx="8" fill="rgba(99,102,241,0.12)"
+              stroke="rgba(99,102,241,0.4)" stroke-width="1.5" />
+            <text x="240" y="57" text-anchor="middle" font-size="11" fill="#e2e8f0" font-weight="600">1.0</text>
+            <text x="240" y="72" text-anchor="middle" font-size="10" fill="#94a3b8">Register / Login</text>
+
+            <!-- Process 2: Ingest -->
+            <rect x="180" y="130" width="120" height="44" rx="8" fill="rgba(20,184,166,0.12)"
+              stroke="rgba(20,184,166,0.4)" stroke-width="1.5" />
+            <text x="240" y="149" text-anchor="middle" font-size="11" fill="#e2e8f0" font-weight="600">2.0</text>
+            <text x="240" y="164" text-anchor="middle" font-size="10" fill="#94a3b8">Ingest Document</text>
+
+            <!-- Process 3: Q&A -->
+            <rect x="180" y="222" width="120" height="44" rx="8" fill="rgba(59,130,246,0.12)"
+              stroke="rgba(59,130,246,0.4)" stroke-width="1.5" />
+            <text x="240" y="241" text-anchor="middle" font-size="11" fill="#e2e8f0" font-weight="600">3.0</text>
+            <text x="240" y="256" text-anchor="middle" font-size="10" fill="#94a3b8">RAG Q&amp;A</text>
+
+            <!-- Process 4: Generate -->
+            <rect x="180" y="314" width="120" height="44" rx="8" fill="rgba(245,158,11,0.12)"
+              stroke="rgba(245,158,11,0.4)" stroke-width="1.5" />
+            <text x="240" y="333" text-anchor="middle" font-size="11" fill="#e2e8f0" font-weight="600">4.0</text>
+            <text x="240" y="348" text-anchor="middle" font-size="10" fill="#94a3b8">Generate Content</text>
+
+            <!-- Process 5: Progress -->
+            <rect x="180" y="406" width="120" height="44" rx="8" fill="rgba(34,197,94,0.12)"
+              stroke="rgba(34,197,94,0.4)" stroke-width="1.5" />
+            <text x="240" y="425" text-anchor="middle" font-size="11" fill="#e2e8f0" font-weight="600">5.0</text>
+            <text x="240" y="440" text-anchor="middle" font-size="10" fill="#94a3b8">Track Progress</text>
+
+            <!-- MongoDB store -->
+            <rect x="370" y="200" width="90" height="200" rx="8" fill="rgba(245,158,11,0.08)"
+              stroke="rgba(245,158,11,0.35)" stroke-width="1.5" />
+            <text x="415" y="293" text-anchor="middle" font-size="10" fill="#fcd34d" font-weight="600"
+              writing-mode="vertical-rl" transform="rotate(0, 415, 293)">MongoDB</text>
+            <text x="415" y="270" text-anchor="middle" font-size="10" fill="#fcd34d" font-weight="700">🗄️</text>
+            <text x="415" y="290" text-anchor="middle" font-size="9" fill="#94a3b8">users</text>
+            <text x="415" y="305" text-anchor="middle" font-size="9" fill="#94a3b8">docs</text>
+            <text x="415" y="320" text-anchor="middle" font-size="9" fill="#94a3b8">attempts</text>
+            <text x="415" y="335" text-anchor="middle" font-size="9" fill="#94a3b8">cards</text>
+            <text x="415" y="350" text-anchor="middle" font-size="9" fill="#94a3b8">chats</text>
+            <text x="415" y="365" text-anchor="middle" font-size="9" fill="#94a3b8">tasks</text>
+
+            <!-- FAISS store -->
+            <rect x="370" y="100" width="90" height="70" rx="8" fill="rgba(20,184,166,0.08)"
+              stroke="rgba(20,184,166,0.35)" stroke-width="1.5" />
+            <text x="415" y="130" text-anchor="middle" font-size="10" fill="#5eead4" font-weight="600">🔍</text>
+            <text x="415" y="145" text-anchor="middle" font-size="10" fill="#5eead4" font-weight="700">FAISS</text>
+            <text x="415" y="160" text-anchor="middle" font-size="9" fill="#94a3b8">vectors (.npy)</text>
+
+            <!-- Arrows: Student → Processes -->
+            <line x1="108" y1="60" x2="180" y2="60" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="4,2" />
+            <polygon points="176,56 184,60 176,64" fill="#6366f1" />
+            <text x="144" y="54" text-anchor="middle" font-size="9" fill="#94a3b8">credentials</text>
+
+            <line x1="60" y1="88" x2="60" y2="152" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2" />
+            <line x1="60" y1="152" x2="180" y2="152" stroke="#14b8a6" stroke-width="1.5" stroke-dasharray="4,2" />
+            <polygon points="176,148 184,152 176,156" fill="#14b8a6" />
+            <text x="120" y="148" text-anchor="middle" font-size="9" fill="#94a3b8">PDF/TXT file</text>
+
+            <line x1="60" y1="88" x2="60" y2="244" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2" />
+            <line x1="60" y1="244" x2="180" y2="244" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4,2" />
+            <polygon points="176,240 184,244 176,248" fill="#3b82f6" />
+            <text x="120" y="238" text-anchor="middle" font-size="9" fill="#94a3b8">question</text>
+
+            <line x1="60" y1="88" x2="60" y2="336" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2" />
+            <line x1="60" y1="336" x2="180" y2="336" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,2" />
+            <polygon points="176,332 184,336 176,340" fill="#f59e0b" />
+
+            <line x1="60" y1="88" x2="60" y2="428" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2" />
+            <line x1="60" y1="428" x2="180" y2="428" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4,2" />
+            <polygon points="176,424 184,428 176,432" fill="#22c55e" />
+
+            <!-- Arrows: Processes → Stores -->
+            <line x1="300" y1="152" x2="370" y2="135" stroke="#14b8a6" stroke-width="1.5" stroke-dasharray="4,2" />
+            <polygon points="366,130 375,134 367,138" fill="#14b8a6" />
+
+            <line x1="300" y1="60" x2="415" y2="60" stroke="#6366f1" stroke-width="1" stroke-dasharray="3,2" />
+            <line x1="415" y1="60" x2="415" y2="200" stroke="#6366f1" stroke-width="1" stroke-dasharray="3,2" />
+
+            <line x1="300" y1="244" x2="370" y2="250" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="4,2" />
+            <polygon points="366,246 375,250 366,254" fill="#3b82f6" />
+
+            <line x1="300" y1="336" x2="370" y2="330" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,2" />
+            <polygon points="366,326 375,330 366,334" fill="#f59e0b" />
+
+            <line x1="300" y1="428" x2="370" y2="400" stroke="#22c55e" stroke-width="1.5" stroke-dasharray="4,2" />
+            <polygon points="366,396 375,400 366,404" fill="#22c55e" />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ ER DIAGRAM ═══════════ -->
+    <section class="section" id="er">
+      <div class="section-tag">🗃️ Design</div>
+      <h2>ER Diagram</h2>
+      <p class="section-lead">Entity relationships for the six MongoDB collections that power AI Study Buddy.</p>
+
+      <div class="diagram-wrap">
+        <div class="diagram-label">📐 Entity-Relationship Diagram</div>
+        <img
+          src="C:\Users\Priyanshu\.gemini\antigravity-ide\brain\793255db-faa3-4682-b080-9ae0adfeab94\er_diagram_1792919135375.png"
+          alt="AI Study Buddy ER Diagram showing 6 MongoDB collections and their relationships" />
+      </div>
+    </section>
+
+    <!-- ═══════════ TECH STACK ═══════════ -->
+    <section class="section" id="techstack">
+      <div class="section-tag">🔧 Design</div>
+      <h2>Technology Stack</h2>
+      <p class="section-lead">Technologies chosen for this project, with rationale.</p>
+
+      <div class="grid-2">
+        <div>
+          <div class="tech-group">
+            <div class="tech-group-label">Frontend</div>
+            <div class="tech-chips">
+              <span class="tech-chip" style="border-color:rgba(59,130,246,0.4)">⚛️ React 18</span>
+              <span class="tech-chip" style="border-color:rgba(245,158,11,0.4)">⚡ Vite 5</span>
+              <span class="tech-chip" style="border-color:rgba(99,102,241,0.4)">🎨 Vanilla CSS</span>
+            </div>
+          </div>
+          <div class="tech-group">
+            <div class="tech-group-label">Backend</div>
+            <div class="tech-chips">
+              <span class="tech-chip" style="border-color:rgba(34,197,94,0.4)">🟢 Node.js</span>
+              <span class="tech-chip" style="border-color:rgba(99,102,241,0.4)">🚀 Express 4</span>
+              <span class="tech-chip" style="border-color:rgba(245,158,11,0.4)">🔐 JWT (jsonwebtoken)</span>
+              <span class="tech-chip" style="border-color:rgba(244,63,94,0.4)">🔒 bcryptjs</span>
+              <span class="tech-chip" style="border-color:rgba(20,184,166,0.4)">📁 Multer</span>
+            </div>
+          </div>
+          <div class="tech-group">
+            <div class="tech-group-label">Database</div>
+            <div class="tech-chips">
+              <span class="tech-chip" style="border-color:rgba(34,197,94,0.4)">🍃 MongoDB</span>
+              <span class="tech-chip" style="border-color:rgba(245,158,11,0.4)">🔗 Mongoose 8</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="tech-group">
+            <div class="tech-group-label">AI Service</div>
+            <div class="tech-chips">
+              <span class="tech-chip" style="border-color:rgba(59,130,246,0.4)">🐍 Python 3.11</span>
+              <span class="tech-chip" style="border-color:rgba(20,184,166,0.4)">⚡ FastAPI</span>
+              <span class="tech-chip" style="border-color:rgba(245,158,11,0.4)">🧠 Claude Sonnet</span>
+              <span class="tech-chip" style="border-color:rgba(99,102,241,0.4)">🔍 FAISS</span>
+              <span class="tech-chip" style="border-color:rgba(244,63,94,0.4)">📐 MiniLM-L6-v2</span>
+              <span class="tech-chip" style="border-color:rgba(34,197,94,0.4)">📄 pypdf</span>
+            </div>
+          </div>
+          <div class="tech-group">
+            <div class="tech-group-label">Rationale Highlights</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="font-size:13px;color:var(--muted)"><strong style="color:var(--text)">FAISS over cloud vector
+                  DB</strong> – No API cost, works offline, fast cosine similarity with inner product on normalised
+                embeddings.</div>
+              <div style="font-size:13px;color:var(--muted)"><strong style="color:var(--text)">MiniLM-L6-v2</strong> –
+                Lightweight (22 MB), fast inference on CPU, excellent semantic similarity scores for retrieval tasks.
+              </div>
+              <div style="font-size:13px;color:var(--muted)"><strong style="color:var(--text)">MongoDB</strong> –
+                Schema-flexible for evolving data shapes (breakdown arrays, sources arrays); indexed ObjectId refs work
+                cleanly.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ DATABASE DESIGN ═══════════ -->
+    <section class="section" id="dbdesign">
+      <div class="section-tag">🗄️ Design</div>
+      <h2>Database Design</h2>
+      <p class="section-lead">The six MongoDB collections, their fields, types, constraints, and indexes as implemented
+        in <code
+          style="font-family:'JetBrains Mono';background:rgba(99,102,241,0.1);padding:2px 6px;border-radius:4px">models.js</code>.
+      </p>
+
+      <div style="display:flex;flex-direction:column;gap:20px">
+
+        <!-- Users -->
+        <div class="schema-card">
+          <div class="schema-header" style="background:rgba(139,92,246,0.08);border-color:rgba(139,92,246,0.2)">
+            <span class="schema-icon">👤</span>
+            <span class="schema-name" style="color:#c4b5fd">users</span>
+            <span class="schema-desc">Authentication &amp; profile</span>
+          </div>
+          <div class="schema-body">
+            <div class="schema-field">
+              <span class="field-name pk">_id</span>
+              <span class="field-type">ObjectId</span>
+              <span class="field-note"><span class="tag tag-pk">PK</span> Auto-generated by MongoDB</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">name</span>
+              <span class="field-type">String</span>
+              <span class="field-note"><span class="tag tag-req">required</span> Trimmed</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">email</span>
+              <span class="field-type">String</span>
+              <span class="field-note"><span class="tag tag-req">required</span><span class="tag tag-uni">unique</span>
+                Lowercase, trimmed</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">passwordHash</span>
+              <span class="field-type">String</span>
+              <span class="field-note"><span class="tag tag-req">required</span> bcryptjs, cost 10</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">createdAt, updatedAt</span>
+              <span class="field-type">Date</span>
+              <span class="field-note">Auto-managed by <code style="font-size:11px">{ timestamps: true }</code></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Docs -->
+        <div class="schema-card">
+          <div class="schema-header" style="background:rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.2)">
+            <span class="schema-icon">📄</span>
+            <span class="schema-name" style="color:#93c5fd">docs</span>
+            <span class="schema-desc">Uploaded study documents</span>
+          </div>
+          <div class="schema-body">
+            <div class="schema-field">
+              <span class="field-name pk">_id</span>
+              <span class="field-type">ObjectId</span>
+              <span class="field-note"><span class="tag tag-pk">PK</span></span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name fk">user</span>
+              <span class="field-type">ObjectId</span>
+              <span class="field-note"><span class="tag tag-fk">FK → users</span><span
+                  class="tag tag-idx">indexed</span><span class="tag tag-req">required</span></span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">name</span>
+              <span class="field-type">String</span>
+              <span class="field-note"><span class="tag tag-req">required</span> Original filename</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">chunks</span>
+              <span class="field-type">Number</span>
+              <span class="field-note">Number of text chunks created by AI service (default 0)</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">createdAt, updatedAt</span>
+              <span class="field-type">Date</span>
+              <span class="field-note">Auto timestamps</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attempts -->
+        <div class="schema-card">
+          <div class="schema-header" style="background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.2)">
+            <span class="schema-icon">📊</span>
+            <span class="schema-name" style="color:#fcd34d">attempts</span>
+            <span class="schema-desc">Quiz attempt records</span>
+          </div>
+          <div class="schema-body">
+            <div class="schema-field">
+              <span class="field-name pk">_id</span>
+              <span class="field-type">ObjectId</span>
+              <span class="field-note"><span class="tag tag-pk">PK</span></span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name fk">user</span>
+              <span class="field-type">ObjectId</span>
+              <span class="field-note"><span class="tag tag-fk">FK → users</span><span
+                  class="tag tag-idx">indexed</span></span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name fk">doc</span>
+              <span class="field-type">ObjectId</span>
+              <span class="field-note"><span class="tag tag-fk">FK → docs</span></span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">docName</span>
+              <span class="field-type">String</span>
+              <span class="field-note">Denormalised for display without join</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">score, total</span>
+              <span class="field-type">Number</span>
+              <span class="field-note"><span class="tag tag-req">required</span> Correct answers / total
+                questions</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">breakdown</span>
+              <span class="field-type">Array</span>
+              <span class="field-note">[ { topic: String, correct: Number, total: Number } ] — up to 30 items</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="schema-card">
+          <div class="schema-header" style="background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.2)">
+            <span class="schema-icon">🃏</span>
+            <span class="schema-name" style="color:#86efac">cards</span>
+            <span class="schema-desc">Flashcards with SM-2 scheduling fields</span>
+          </div>
+          <div class="schema-body">
+            <div class="schema-field">
+              <span class="field-name fk">user, doc</span>
+              <span class="field-type">ObjectId</span>
+              <span class="field-note"><span class="tag tag-fk">FK → users / docs</span><span
+                  class="tag tag-idx">indexed</span></span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">front, back</span>
+              <span class="field-type">String</span>
+              <span class="field-note"><span class="tag tag-req">required</span> Max 500 / 1000 chars
+                respectively</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">topic</span>
+              <span class="field-type">String</span>
+              <span class="field-note">1–3 word topic label (default "General"), max 40 chars</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">ease</span>
+              <span class="field-type">Number</span>
+              <span class="field-note">SM-2 ease factor (default 2.5, min 1.3)</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">interval, reps</span>
+              <span class="field-type">Number</span>
+              <span class="field-note">Days until next review; repetition count</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">due</span>
+              <span class="field-type">Date</span>
+              <span class="field-note"><span class="tag tag-idx">indexed</span> Next scheduled review date</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">lastReviewed</span>
+              <span class="field-type">Date</span>
+              <span class="field-note">Used for streak calculation</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chats -->
+        <div class="schema-card">
+          <div class="schema-header" style="background:rgba(244,63,94,0.08);border-color:rgba(244,63,94,0.2)">
+            <span class="schema-icon">💬</span>
+            <span class="schema-name" style="color:#fca5a5">chats</span>
+            <span class="schema-desc">RAG conversation history</span>
+          </div>
+          <div class="schema-body">
+            <div class="schema-field">
+              <span class="field-name fk">user</span>
+              <span class="field-type">ObjectId</span>
+              <span class="field-note"><span class="tag tag-fk">FK → users</span><span
+                  class="tag tag-idx">indexed</span></span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">question, answer</span>
+              <span class="field-type">String</span>
+              <span class="field-note">User's question and Claude's grounded answer</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">grounded</span>
+              <span class="field-type">Boolean</span>
+              <span class="field-note">True if answer was found in notes; false if "not found" response</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">mode</span>
+              <span class="field-type">String</span>
+              <span class="field-note">"simple" | "standard" | "exam" — controls LLM prompt style</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">sources</span>
+              <span class="field-type">Array</span>
+              <span class="field-note">[ { n: Number, doc_name: String, snippet: String } ] — cited excerpts</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tasks -->
+        <div class="schema-card">
+          <div class="schema-header" style="background:rgba(20,184,166,0.08);border-color:rgba(20,184,166,0.2)">
+            <span class="schema-icon">✅</span>
+            <span class="schema-name" style="color:#5eead4">tasks</span>
+            <span class="schema-desc">Study planner to-do items</span>
+          </div>
+          <div class="schema-body">
+            <div class="schema-field">
+              <span class="field-name fk">user</span>
+              <span class="field-type">ObjectId</span>
+              <span class="field-note"><span class="tag tag-fk">FK → users</span><span
+                  class="tag tag-idx">indexed</span></span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">title</span>
+              <span class="field-type">String</span>
+              <span class="field-note"><span class="tag tag-req">required</span> Trimmed. AI-generated or manual</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">due</span>
+              <span class="field-type">Date</span>
+              <span class="field-note">Optional due date. AI plans schedule tasks across consecutive days</span>
+            </div>
+            <div class="schema-field">
+              <span class="field-name">done</span>
+              <span class="field-type">Boolean</span>
+              <span class="field-note">Completion flag (default false). Toggled via PATCH /tasks/:id</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end schema cards -->
+    </section>
+
+    <!-- ═══════════ DEMO: PROJECT SETUP ═══════════ -->
+    <section class="section" id="setup">
+      <div class="section-tag">💻 Working Demo</div>
+      <h2>Demo 1 — Project Setup Running</h2>
+      <p class="section-lead">React front end on port 5173, Express backend on port 5000, Python AI service on port
+        8000, all connected to MongoDB.</p>
+
+      <div class="demo-flow">
+        <div class="demo-step">
+          <div class="step-line">
+            <div class="step-circle">1</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Start MongoDB (local instance)</div>
+            <div class="step-desc">MongoDB runs locally. The backend connects to <code
+                style="font-family:'JetBrains Mono';font-size:12px">mongodb://127.0.0.1:27017/ai_study_buddy</code>.
+            </div>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <span class="terminal-title">PowerShell – MongoDB</span>
+              </div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">PS&gt;</span> <span class="t-cmd">mongod --dbpath ./data/db</span></div>
+                <div class="t-out">{"t":{"$date":"..."},"s":"I","c":"NETWORK","ctx":"listener","msg":"Listening
+                  on","attr":{"address":"127.0.0.1:27017"}}</div>
+                <div class="t-success">{"s":"I","c":"NETWORK","msg":"Waiting for connections","attr":{"port":27017}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-step">
+          <div class="step-line">
+            <div class="step-circle">2</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Start Express Backend (Node.js)</div>
+            <div class="step-desc">Reads <code style="font-family:'JetBrains Mono';font-size:12px">backend/.env</code>
+              for <code style="font-family:'JetBrains Mono';font-size:12px">JWT_SECRET</code> and <code
+                style="font-family:'JetBrains Mono';font-size:12px">MONGO_URI</code>. Starts with Node's built-in <code
+                style="font-family:'JetBrains Mono';font-size:12px">--watch</code> flag (no nodemon needed).</div>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <span class="terminal-title">PowerShell – Backend</span>
+              </div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">PS&gt;</span> <span class="t-cmd">cd backend ; npm run dev</span></div>
+                <div class="t-info">Restarting 'server.js'</div>
+                <div class="t-success">API running on http://localhost:5000</div>
+                <div class="t-success">MongoDB connected successfully</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-step">
+          <div class="step-line">
+            <div class="step-circle">3</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Start Python AI Service (FastAPI)</div>
+            <div class="step-desc">Downloads and caches <code
+                style="font-family:'JetBrains Mono';font-size:12px">all-MiniLM-L6-v2</code> on first run. Reads <code
+                style="font-family:'JetBrains Mono';font-size:12px">ANTHROPIC_API_KEY</code> from <code
+                style="font-family:'JetBrains Mono';font-size:12px">ai_service/.env</code>.</div>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <span class="terminal-title">PowerShell – AI Service</span>
+              </div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">PS&gt;</span> <span class="t-cmd">cd ai_service ; uvicorn main:app --reload
+                    --port 8000</span></div>
+                <div class="t-info">Loading sentence transformer model (all-MiniLM-L6-v2)...</div>
+                <div class="t-success">INFO: Application startup complete.</div>
+                <div class="t-success">INFO: Uvicorn running on http://127.0.0.1:8000</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-step">
+          <div class="step-line">
+            <div class="step-circle">4</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Start React Frontend (Vite)</div>
+            <div class="step-desc">Vite dev server with HMR. Proxied API calls go to <code
+                style="font-family:'JetBrains Mono';font-size:12px">localhost:5000</code> via vite.config.js.</div>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <span class="terminal-title">PowerShell – Frontend</span>
+              </div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">PS&gt;</span> <span class="t-cmd">cd frontend ; npm run dev</span></div>
+                <div class="t-info"> VITE v5.4.0 ready in 312 ms</div>
+                <div class="t-success"> ➜ Local: http://localhost:5173/</div>
+                <div class="t-success"> ➜ Network: use --host to expose</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-step">
+          <div class="step-line">
+            <div class="step-circle">5</div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Verify Health Endpoints</div>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <span class="terminal-title">PowerShell – Verification</span>
+              </div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">PS&gt;</span> <span class="t-cmd">curl http://localhost:5000/health</span>
+                </div>
+                <div class="t-success">{"ok":true}</div>
+                <div style="margin-top:8px"><span class="t-prompt">PS&gt;</span> <span class="t-cmd">curl
+                    http://localhost:8000/health</span></div>
+                <div class="t-success">{"status":"ok"}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ DEMO: AUTH + JWT ═══════════ -->
+    <section class="section" id="auth">
+      <div class="section-tag">💻 Working Demo</div>
+      <h2>Demo 2 — Register, Login &amp; JWT Auth</h2>
+      <p class="section-lead">
+        Full authentication flow using bcryptjs and JWT. Demonstrates successful registration, successful login,
+        and the exact error returned for a wrong password.
+      </p>
+
+      <div class="demo-flow">
+        <div class="demo-step">
+          <div class="step-line">
+            <div class="step-circle">1</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Register a new user</div>
+            <div class="step-desc">POST <code
+                style="font-family:'JetBrains Mono';font-size:12px">/api/auth/register</code>. Validates email format,
+              minimum 6-char password, and unique email. Hashes password with bcrypt cost 10 and returns a signed JWT.
+            </div>
+
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <div class="code-filename"><span>routes.js</span><span class="code-lang">js</span></div>
+              </div>
+              <pre><span class="cmt">// POST /api/auth/register</span>
+<span class="prop">router</span>.<span class="fn">post</span>(<span class="str">'/auth/register'</span>, <span class="fn">h</span>(<span class="kw">async</span> (req, res) <span class="op">=&gt;</span> {
+  <span class="kw">const</span> { name, email, password } <span class="op">=</span> req.body;
+  <span class="kw">if</span> (!name || !email || !password) <span class="kw">throw</span> <span class="fn">bad</span>(<span class="str">'Name, email and password are required'</span>);
+  <span class="kw">if</span> (!<span class="str">/^\S+@\S+\.\S+$/</span>.<span class="fn">test</span>(email)) <span class="kw">throw</span> <span class="fn">bad</span>(<span class="str">'Enter a valid email address'</span>);
+  <span class="kw">if</span> (password.length &lt; <span class="num">6</span>) <span class="kw">throw</span> <span class="fn">bad</span>(<span class="str">'Password must be at least 6 characters'</span>);
+  <span class="kw">if</span> (<span class="kw">await</span> User.<span class="fn">findOne</span>({ email: email.<span class="fn">toLowerCase</span>() }))
+    <span class="kw">throw</span> <span class="fn">bad</span>(<span class="str">'Email is already registered'</span>, <span class="num">409</span>);
+  <span class="kw">const</span> user <span class="op">=</span> <span class="kw">await</span> User.<span class="fn">create</span>({
+    name, email,
+    passwordHash: <span class="kw">await</span> bcrypt.<span class="fn">hash</span>(password, <span class="num">10</span>)
+  });
+  res.<span class="fn">status</span>(<span class="num">201</span>).<span class="fn">json</span>({ token: <span class="fn">sign</span>(user), user: { name: user.name, email: user.email } });
+}));</pre>
+            </div>
+
+            <div class="terminal">
+              <div class="terminal-bar">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <span class="terminal-title">HTTP Response – 201 Created</span>
+              </div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">POST</span> <span class="t-info"> /api/auth/register</span></div>
+                <div class="t-out">Body: { "name": "Priyanshu", "email": "p@example.com", "password": "secret123" }
+                </div>
+                <div style="margin-top:8px" class="t-success">HTTP 201 Created</div>
+                <div class="t-out">{</div>
+                <div class="t-out"> "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N...",</div>
+                <div class="t-out"> "user": { "name": "Priyanshu", "email": "p@example.com" }</div>
+                <div class="t-out">}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-step">
+          <div class="step-line">
+            <div class="step-circle">2</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Login with correct credentials</div>
+            <div class="step-desc">POST <code
+                style="font-family:'JetBrains Mono';font-size:12px">/api/auth/login</code>. Looks up user by email
+              (case-insensitive), compares password against bcrypt hash, returns new JWT valid for 7 days.</div>
+
+            <div class="terminal">
+              <div class="terminal-bar">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <span class="terminal-title">HTTP Response – 200 OK</span>
+              </div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">POST</span> <span class="t-info"> /api/auth/login</span></div>
+                <div class="t-out">Body: { "email": "p@example.com", "password": "secret123" }</div>
+                <div style="margin-top:8px" class="t-success">HTTP 200 OK</div>
+                <div class="t-out">{</div>
+                <div class="t-out"> "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N...",</div>
+                <div class="t-out"> "user": { "name": "Priyanshu", "email": "p@example.com" }</div>
+                <div class="t-out">}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-step">
+          <div class="step-line">
+            <div class="step-circle">3</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Login with wrong password — error shown</div>
+            <div class="step-desc">The server intentionally gives the same vague error for both wrong email and wrong
+              password to prevent email enumeration attacks.</div>
+
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <div class="code-filename"><span>routes.js – login handler</span><span class="code-lang">js</span></div>
+              </div>
+              <pre><span class="cmt">// POST /api/auth/login</span>
+<span class="prop">router</span>.<span class="fn">post</span>(<span class="str">'/auth/login'</span>, <span class="fn">h</span>(<span class="kw">async</span> (req, res) <span class="op">=&gt;</span> {
+  <span class="kw">const</span> { email, password } <span class="op">=</span> req.body;
+  <span class="kw">const</span> user <span class="op">=</span> <span class="kw">await</span> User.<span class="fn">findOne</span>({ email: String(email || <span class="str">''</span>).<span class="fn">toLowerCase</span>() });
+  <span class="cmt">// bcrypt.compare returns false if hash doesn't match → same error either way</span>
+  <span class="kw">if</span> (!user || !(<span class="kw">await</span> bcrypt.<span class="fn">compare</span>(password || <span class="str">''</span>, user.passwordHash)))
+    <span class="kw">throw</span> <span class="fn">bad</span>(<span class="str">'Wrong email or password'</span>, <span class="num">401</span>);
+  res.<span class="fn">json</span>({ token: <span class="fn">sign</span>(user), user: { name: user.name, email: user.email } });
+}));</pre>
+            </div>
+
+            <div class="terminal">
+              <div class="terminal-bar">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <span class="terminal-title">HTTP Response – 401 Unauthorized (wrong password)</span>
+              </div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">POST</span> <span class="t-info"> /api/auth/login</span></div>
+                <div class="t-out">Body: { "email": "p@example.com", "password": "wrongpassword" }</div>
+                <div style="margin-top:8px" class="t-error">HTTP 401 Unauthorized</div>
+                <div class="t-out">{</div>
+                <div class="t-error"> "error": "Wrong email or password"</div>
+                <div class="t-out">}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-step">
+          <div class="step-line">
+            <div class="step-circle">4</div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">JWT Auth Middleware — protects all private routes</div>
+            <div class="step-desc">Every route after login requires <code
+                style="font-family:'JetBrains Mono';font-size:12px">Authorization: Bearer &lt;token&gt;</code>. Missing
+              or expired tokens return clear errors.</div>
+
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <div class="code-filename"><span>middleware.js</span><span class="code-lang">js</span></div>
+              </div>
+              <pre><span class="kw">module</span>.exports <span class="op">=</span> <span class="kw">function</span> <span class="fn">auth</span>(req, res, next) {
+  <span class="kw">const</span> header <span class="op">=</span> req.headers.authorization || <span class="str">''</span>;
+  <span class="kw">const</span> token <span class="op">=</span> header.<span class="fn">startsWith</span>(<span class="str">'Bearer '</span>) ? header.<span class="fn">slice</span>(<span class="num">7</span>) : <span class="kw">null</span>;
+  <span class="kw">if</span> (!token) <span class="kw">return</span> res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ error: <span class="str">'Please log in'</span> });
+  <span class="kw">try</span> {
+    <span class="kw">const</span> payload <span class="op">=</span> jwt.<span class="fn">verify</span>(token, process.env.JWT_SECRET);
+    req.userId <span class="op">=</span> payload.id;  <span class="cmt">// scopes all DB queries to this user</span>
+    <span class="fn">next</span>();
+  } <span class="kw">catch</span> {
+    res.<span class="fn">status</span>(<span class="num">401</span>).<span class="fn">json</span>({ error: <span class="str">'Session expired, please log in again'</span> });
+  }
+};</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ DEMO: RAG / PDF CHUNKING ═══════════ -->
+    <section class="section" id="rag">
+      <div class="section-tag">💻 Optional Demo</div>
+      <h2>Demo 3 — PDF Upload &amp; RAG Chunking</h2>
+      <p class="section-lead">
+        The first step of the RAG pipeline: upload a PDF through the Express API, which forwards it to the Python AI
+        service,
+        where it is extracted, cleaned, split into overlapping 200-word chunks, embedded with MiniLM-L6-v2, and stored
+        in a FAISS index.
+      </p>
+
+      <div class="demo-flow">
+        <div class="demo-step">
+          <div class="step-line">
+            <div class="step-circle">1</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Step 1 — Text extraction from PDF</div>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <div class="code-filename"><span>main.py – extract_text()</span><span class="code-lang">python</span>
+                </div>
+              </div>
+              <pre><span class="kw">def</span> <span class="fn">extract_text</span>(filename: str, data: bytes) <span class="op">-&gt;</span> str:
+    <span class="kw">if</span> filename.<span class="fn">lower</span>().<span class="fn">endswith</span>(<span class="str">".pdf"</span>):
+        reader <span class="op">=</span> PdfReader(io.<span class="fn">BytesIO</span>(data))
+        <span class="kw">return</span> <span class="str">"\n"</span>.<span class="fn">join</span>((page.<span class="fn">extract_text</span>() or <span class="str">""</span>) <span class="kw">for</span> page <span class="kw">in</span> reader.pages)
+    <span class="kw">return</span> data.<span class="fn">decode</span>(<span class="str">"utf-8"</span>, errors<span class="op">=</span><span class="str">"ignore"</span>)</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-step">
+          <div class="step-line">
+            <div class="step-circle">2</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Step 2 — Split into overlapping 200-word chunks</div>
+            <div class="step-desc">Overlap of 40 words ensures context is not lost at chunk boundaries. Any chunk under
+              15 words (at the end of the document) is merged with the last valid chunk.</div>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <div class="code-filename"><span>main.py – chunk_text()</span><span class="code-lang">python</span>
+                </div>
+              </div>
+              <pre><span class="prop">CHUNK_WORDS</span> <span class="op">=</span> <span class="num">200</span>
+<span class="prop">OVERLAP_WORDS</span> <span class="op">=</span> <span class="num">40</span>
+
+<span class="kw">def</span> <span class="fn">chunk_text</span>(text: str) <span class="op">-&gt;</span> List[str]:
+    words <span class="op">=</span> <span class="fn">clean</span>(text).<span class="fn">split</span>(<span class="str">" "</span>)
+    <span class="kw">if not</span> words <span class="kw">or</span> words <span class="op">==</span> [<span class="str">""</span>]:
+        <span class="kw">return</span> []
+    step <span class="op">=</span> CHUNK_WORDS <span class="op">-</span> OVERLAP_WORDS  <span class="cmt"># slide 160 words each time</span>
+    chunks <span class="op">=</span> []
+    <span class="kw">for</span> start <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, <span class="fn">len</span>(words), step):
+        piece <span class="op">=</span> words[start : start <span class="op">+</span> CHUNK_WORDS]
+        <span class="kw">if</span> <span class="fn">len</span>(piece) <span class="op">&gt;=</span> <span class="num">15</span> <span class="kw">or not</span> chunks:  <span class="cmt"># skip tiny trailing fragments</span>
+            chunks.<span class="fn">append</span>(<span class="str">" "</span>.<span class="fn">join</span>(piece))
+        <span class="kw">if</span> start <span class="op">+</span> CHUNK_WORDS <span class="op">&gt;=</span> <span class="fn">len</span>(words):
+            <span class="kw">break</span>
+    <span class="kw">return</span> chunks</pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-step">
+          <div class="step-line">
+            <div class="step-circle">3</div>
+            <div class="step-connector"></div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Step 3 — Embed chunks &amp; store in FAISS</div>
+            <div class="step-desc">MiniLM-L6-v2 encodes each chunk into a 384-dimension vector. Vectors are normalised
+              for cosine similarity via inner product. Stored as <code
+                style="font-family:'JetBrains Mono';font-size:12px">.npy</code> NumPy arrays alongside a JSON metadata
+              file, per user.</div>
+            <div class="code-block">
+              <div class="code-header">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <div class="code-filename"><span>main.py – Store.add()</span><span class="code-lang">python</span></div>
+              </div>
+              <pre><span class="kw">def</span> <span class="fn">embed</span>(texts: List[str]) <span class="op">-&gt;</span> np.ndarray:
+    <span class="kw">return</span> embedder.<span class="fn">encode</span>(
+        texts, normalize_embeddings<span class="op">=</span><span class="kw">True</span>, convert_to_numpy<span class="op">=</span><span class="kw">True</span>
+    ).<span class="fn">astype</span>(<span class="str">"float32"</span>)
+
+<span class="kw">def</span> <span class="fn">add</span>(self, doc_id: str, doc_name: str, texts: List[str]):
+    vectors <span class="op">=</span> <span class="fn">embed</span>(texts)
+    <span class="kw">for</span> i, t <span class="kw">in</span> <span class="fn">enumerate</span>(texts):
+        self.chunks.<span class="fn">append</span>({
+            <span class="str">"doc_id"</span>: doc_id, <span class="str">"doc_name"</span>: doc_name,
+            <span class="str">"order"</span>: i, <span class="str">"text"</span>: t
+        })
+    self.emb <span class="op">=</span> np.<span class="fn">vstack</span>([self.emb, vectors])
+    self.<span class="fn">save</span>()  <span class="cmt"># persist chunks.json + emb.npy</span></pre>
+            </div>
+          </div>
+        </div>
+
+        <div class="demo-step">
+          <div class="step-line">
+            <div class="step-circle">4</div>
+          </div>
+          <div class="step-content">
+            <div class="step-title">Step 4 — API response confirming chunk count</div>
+            <div class="terminal">
+              <div class="terminal-bar">
+                <div class="code-dots">
+                  <div class="code-dot dot-red"></div>
+                  <div class="code-dot dot-yellow"></div>
+                  <div class="code-dot dot-green"></div>
+                </div>
+                <span class="terminal-title">HTTP Response – Upload a PDF via multipart form</span>
+              </div>
+              <div class="terminal-body">
+                <div><span class="t-prompt">POST</span> <span class="t-info"> /api/docs</span> (multipart, Bearer token
+                  required)</div>
+                <div class="t-out">Form fields: file=data_structures_notes.pdf</div>
+                <div style="margin-top:8px" class="t-success">HTTP 201 Created</div>
+                <div class="t-out">{</div>
+                <div class="t-out"> "_id": "677abc123def456...",</div>
+                <div class="t-out"> "user": "677aaa111bbb222...",</div>
+                <div class="t-out"> "name": "data_structures_notes.pdf",</div>
+                <div class="t-success"> "chunks": 47,</div>
+                <div class="t-out"> "createdAt": "2026-10-25T09:00:00.000Z"</div>
+                <div class="t-out">}</div>
+                <div style="margin-top:12px;color:#6c7086;font-size:11px"># AI service file structure created:</div>
+                <div class="t-info">ai_service/data/&lt;userId&gt;/chunks.json ← chunk texts + metadata</div>
+                <div class="t-info">ai_service/data/&lt;userId&gt;/emb.npy ← 47×384 float32 embeddings</div>
+              </div>
+            </div>
+
+            <div
+              style="margin-top:16px;padding:16px 20px;background:rgba(20,184,166,0.08);border:1px solid rgba(20,184,166,0.25);border-radius:10px">
+              <p style="font-size:13px;font-weight:700;color:#5eead4;margin-bottom:6px">🧠 RAG Pipeline — What happens
+                next</p>
+              <p style="font-size:13px;color:var(--muted)">
+                When the user asks a question, the AI service uses FAISS to find the <strong>top-k most similar
+                  chunks</strong>
+                (cosine similarity via inner product on normalised vectors, threshold ≥ 0.25). These chunks are injected
+                as
+                numbered context into a Claude Sonnet prompt. The LLM is instructed to answer <em>only</em> from those
+                excerpts
+                and cite them like [1], [2]. If no relevant chunk is found, it returns the hard-coded "not found"
+                message —
+                preventing hallucination.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ TIMELINE ═══════════ -->
+    <section class="section" id="timeline">
+      <div class="section-tag">📅 Roadmap</div>
+      <h2>11-Week Project Timeline</h2>
+      <p class="section-lead">Overall project plan showing completed milestones (green), current progress (amber), and
+        upcoming work (dim).</p>
+
+      <div class="timeline">
+        <div class="tl-item done">
+          <div>
+            <div class="tl-badge done">✓ Done</div>
+          </div>
+          <div class="tl-text">
+            <strong>Phase 1 — Planning &amp; Design</strong><br>
+            <span style="font-size:13px;color:var(--muted)">Title, synopsis, problem statement, objectives, literature
+              survey, architecture, ER diagram, DFD, use cases, tech stack, DB schema design</span>
+          </div>
+          <div class="tl-week">Weeks 1–2</div>
+        </div>
+
+        <div class="tl-item partial">
+          <div>
+            <div class="tl-badge partial">⚡ In Progress</div>
+          </div>
+          <div class="tl-text">
+            <strong>Phase 2 — Core Infrastructure</strong><br>
+            <span style="font-size:13px;color:var(--muted)">✅ MongoDB collections designed &amp; implemented · ✅ JWT
+              register/login · ✅ PDF ingestion + chunking · ⬜ Frontend auth screens (UI polish)</span>
+          </div>
+          <div class="tl-week">Weeks 3–4</div>
+        </div>
+
+        <div class="tl-item todo">
+          <div>
+            <div class="tl-badge todo">→ Next</div>
+          </div>
+          <div class="tl-text">
+            <strong>Phase 3 — RAG Q&amp;A + Document Library</strong><br>
+            <span style="font-size:13px;color:var(--muted)">FAISS search, Claude integration for /ask, chat history,
+              document list UI</span>
+          </div>
+          <div class="tl-week">Weeks 5–6</div>
+        </div>
+
+        <div class="tl-item todo">
+          <div>
+            <div class="tl-badge todo">→ Planned</div>
+          </div>
+          <div class="tl-text">
+            <strong>Phase 4 — Quiz, Flashcards &amp; Spaced Repetition</strong><br>
+            <span style="font-size:13px;color:var(--muted)">MCQ quiz generation, SM-2 flashcard scheduling, bulk card
+              import, review queue</span>
+          </div>
+          <div class="tl-week">Weeks 7–8</div>
+        </div>
+
+        <div class="tl-item todo">
+          <div>
+            <div class="tl-badge todo">→ Planned</div>
+          </div>
+          <div class="tl-text">
+            <strong>Phase 5 — Progress Analytics &amp; Planner</strong><br>
+            <span style="font-size:13px;color:var(--muted)">Weak topic detection, score trends, streak counter, AI
+              revision plan generation, task management</span>
+          </div>
+          <div class="tl-week">Weeks 9–10</div>
+        </div>
+
+        <div class="tl-item todo">
+          <div>
+            <div class="tl-badge todo">→ Planned</div>
+          </div>
+          <div class="tl-text">
+            <strong>Phase 6 — Testing, Polish &amp; Deployment</strong><br>
+            <span style="font-size:13px;color:var(--muted)">End-to-end testing, responsive UI polish, final report,
+              demonstration video</span>
+          </div>
+          <div class="tl-week">Week 11</div>
+        </div>
+      </div>
+
+      <!-- progress summary -->
+      <div
+        style="margin-top:40px;padding:28px;background:var(--surface);border:1px solid var(--border);border-radius:16px">
+        <p style="font-size:14px;font-weight:700;margin-bottom:20px">Progress at Week 3 (25% milestone)</p>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+          <div style="text-align:center">
+            <div style="font-size:32px;font-weight:900;color:var(--green)">7</div>
+            <div style="font-size:12px;color:var(--muted)">Planning Documents Complete</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:32px;font-weight:900;color:var(--accent)">5</div>
+            <div style="font-size:12px;color:var(--muted)">Design Artefacts Complete</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:32px;font-weight:900;color:var(--teal)">3</div>
+            <div style="font-size:12px;color:var(--muted)">Working Demo Items</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-size:32px;font-weight:900;color:var(--amber)">6</div>
+            <div style="font-size:12px;color:var(--muted)">MongoDB Collections Live</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div>
+      <strong>AI Study Buddy</strong> · 25% Progress Report · Week 3
+    </div>
+    <div style="display:flex;gap:16px;align-items:center">
+      <span class="badge badge-green" style="margin:0">✓ Phase 1 Complete</span>
+      <span class="badge badge-amber" style="margin:0">⚡ Phase 2 Started</span>
+    </div>
+  </footer>
+
+  <script>
+    // Active nav highlighting on scroll
+    const sections = document.querySelectorAll('.section[id], .hero');
+    const navItems = document.querySelectorAll('.nav-item');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navItems.forEach(item => {
+            item.classList.toggle('active', item.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+
+    sections.forEach(s => { if (s.id) observer.observe(s); });
+
+    // Smooth scroll for nav links
+    navItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        const href = item.getAttribute('href');
+        if (href && href.startsWith('#')) {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
